@@ -91,7 +91,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Set the bounciness of the element
         ball.physicsBody?.restitution = 0.4
         ball.physicsBody?.contactTestBitMask = ball.physicsBody?.collisionBitMask ?? 0
-        ball.position = location
+        ball.position = CGPoint(x: location.x, y: 768)
         ball.name = "ball"
         addChild(ball)
     }
