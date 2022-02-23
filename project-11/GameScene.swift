@@ -17,6 +17,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    var editingLabel: SKLabelNode!
+    
+    var editingMode = false {
+        didSet {
+            if editingMode {
+                editingLabel.text = "Done"
+            } else {
+                editingLabel.text = "Edit"
+            }
+        }
+    }
+    
     override func didMove(to view: SKView) {
         // Configure background
         let background = SKSpriteNode(imageNamed: "background")
@@ -30,6 +42,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.horizontalAlignmentMode = .right
         scoreLabel.position = CGPoint(x: 980, y: 700)
         addChild(scoreLabel)
+        
+        editingLabel = SKLabelNode(fontNamed: "Chalkduster")
+        editingLabel.text = "Edit"
+        editingLabel.position = CGPoint(x: 80, y: 700)
+        addChild(editingLabel)
         
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         physicsWorld.contactDelegate = self
@@ -48,6 +65,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let touch = touches.first else { return }
         
         let location = touch.location(in: self)
+        let objects = nodes(at: location)
+        
+        if objects.contains(editingLabel) {
+            editingMode.toggle()
+            return
+        }
+        
+        if editingMode {
+            //create a box
+            let size = CGSize(width: Int.random(in: 16...128), height: 16)
+            
+            let box = SKSpriteNode(color: UIColor(red: CGFloat.random(in: 0...1), green: CGFloat.random(in: 0...1), blue: CGFloat.random(in: 0...1), alpha: 1), size: size)
+            box.zRotation = CGFloat.random(in: 0...3)
+            box.position = location
+            box.physicsBody = SKPhysicsBody(rectangleOf: box.size)
+            box.physicsBody?.isDynamic = false
+            addChild(box)
+            return
+        }
         
         let ball = SKSpriteNode(imageNamed: "ballRed")
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2.0)
