@@ -17,6 +17,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    let balls = ["ballBlue", "ballCyan", "ballGreen", "ballGrey", "ballPurple", "ballRed", "ballYellow"]
+    
     var editingLabel: SKLabelNode!
     
     var editingMode = false {
@@ -85,13 +87,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
-        let ball = SKSpriteNode(imageNamed: "ballRed")
+        makeBall(at: location, imageName: balls.randomElement()!)
+    }
+    
+    func makeBall(at position: CGPoint, imageName: String) {
+        let ball = SKSpriteNode(imageNamed: imageName)
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2.0)
         
         // Set the bounciness of the element
         ball.physicsBody?.restitution = 0.4
         ball.physicsBody?.contactTestBitMask = ball.physicsBody?.collisionBitMask ?? 0
-        ball.position = CGPoint(x: location.x, y: 768)
+        ball.position = CGPoint(x: position.x, y: 768)
         ball.name = "ball"
         addChild(ball)
     }
@@ -143,6 +149,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func destroy(ball: SKNode) {
+        if let fireParticles = SKEmitterNode(fileNamed: "FireParticles") {
+            fireParticles.position = ball.position
+            addChild(fireParticles)
+        }
+        
         ball.removeFromParent()
     }
     
