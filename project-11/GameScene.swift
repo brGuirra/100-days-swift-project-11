@@ -87,7 +87,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         
-        makeBall(at: location, imageName: balls.randomElement()!)
+        if location.y >= 500 {
+            makeBall(at: location, imageName: balls.randomElement()!)
+        }
     }
     
     func makeBall(at position: CGPoint, imageName: String) {
