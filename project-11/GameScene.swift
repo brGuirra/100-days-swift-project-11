@@ -19,6 +19,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let balls = ["ballBlue", "ballCyan", "ballGreen", "ballGrey", "ballPurple", "ballRed", "ballYellow"]
     
+    var ballsCounter = 5
+    
     var editingLabel: SKLabelNode!
     
     var editingMode = false {
@@ -81,14 +83,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let box = SKSpriteNode(color: UIColor(red: CGFloat.random(in: 0...1), green: CGFloat.random(in: 0...1), blue: CGFloat.random(in: 0...1), alpha: 1), size: size)
             box.zRotation = CGFloat.random(in: 0...3)
             box.position = location
+            box.name = "box"
             box.physicsBody = SKPhysicsBody(rectangleOf: box.size)
             box.physicsBody?.isDynamic = false
             addChild(box)
             return
         }
         
-        if location.y >= 500 {
+        if location.y >= 500 && ballsCounter > 0 {
             makeBall(at: location, imageName: balls.randomElement()!)
+            ballsCounter -= 1
         }
     }
     
@@ -142,21 +146,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func colision(between ball: SKNode, object: SKNode) {
         if object.name == "good" {
-            destroy(ball: ball)
+            destroyBall(ball: ball)
+            
+            ballsCounter += 1
+            
             score += 1
         } else if object.name == "bad" {
-            destroy(ball: ball)
+            destroyBall(ball: ball)
+            
             score -= 1
+        } else if object.name == "box" {
+            destroyBox(box: object)
         }
     }
     
-    func destroy(ball: SKNode) {
+    func destroyBall(ball: SKNode) {
         if let fireParticles = SKEmitterNode(fileNamed: "FireParticles") {
             fireParticles.position = ball.position
             addChild(fireParticles)
         }
         
         ball.removeFromParent()
+    }
+    
+    func destroyBox(box: SKNode) {
+        box.removeFromParent()
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
